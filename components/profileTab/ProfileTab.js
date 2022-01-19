@@ -66,7 +66,7 @@ export default class ProfileTab extends React.Component {
                         })
                     }else{
                         this.setState({loginPhase:1});
-                        console.log("nessun utente trovato", response)
+                        console.log("nessun utente trovato")
                     }
             }
         } catch ({message}) {
@@ -75,7 +75,7 @@ export default class ProfileTab extends React.Component {
     }
 
     async completeLogin() {
-        const username = this.state.username
+        const username = this.state.username;
         if(new RegExp('^[a-zA-Z0-9._-]{3,}$').test(username) && username !== undefined && username !== null){ //Test username if is correct
             const body = {token: this.token, username: username}
             const requestOptions = {
@@ -94,10 +94,14 @@ export default class ProfileTab extends React.Component {
                         this.storeUser(userObject,tokenObject);
                     })
                 }else{
+                    console.log("error");
                     this.setState({loginPhase:0});
                 }
-        }else
+        }else{
+            console.log(username);
             this.setState({loginPhase:0});
+        }
+
     }
 
     render() {
@@ -136,7 +140,7 @@ export default class ProfileTab extends React.Component {
                 return <View style={[style.notLoggedTab,generalStyleSheet.bigBorder]}>
                     <View>
                         <Text style={generalStyleSheet.bigTitle}>Inserisci il tuo username</Text>
-                        <TextInput style={style.textInput} onChange={text=>this.setState({username:text})}/>
+                        <TextInput style={style.textInput} onChangeText={(text)=>this.setState({username:text})}/>
                         <Button title="Completa login" onPress={()=>this.completeLogin()}/>
                     </View>
                 </View>

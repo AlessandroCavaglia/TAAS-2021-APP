@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {StyleSheet, Text, View, Button, Animated, Dimensions, PanResponder, AsyncStorage} from 'react-native';
 import TinderCard from "./TinderCard";
+import Constants from "../constants";
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
         position:'absolute'
     },
     viewContainer:{
+        marginTop:"15%",
         flex:1,
         paddingLeft:"7%",
         paddingRight:"7%",
@@ -31,16 +33,16 @@ const styles = StyleSheet.create({
     },
     cardContainer:{
         flex:1,
+        marginTop:"-25%",
         height: "60%",
         maxHeight:"60%"
     }
 })
 const Cards = [
-    { id: "1", color: '#00ffcc',title: 'Xbox' },
-    { id: "2", color: '#ffd500',title: 'Bicicletta'  },
-    { id: "3", color: '#08ff00',title: 'laptop HP'  },
-    { id: "4", color: '#1a0dd2',title: 'Stereo'  },
-    { id: "5", color: '#ff0000',title: 'Monitor Dell'  },
+    { id: "1",title: 'Xbox',description:'Descrizione',categories:'category1,category2',priceRange:1,images:[] },
+    { id: "2",title: 'Xbox1',description:'Descrizione',categories:'category1,category2',priceRange:1,images:[] },
+    { id: "3",title: 'Xbox2',description:'Descrizione',categories:'category1,category2',priceRange:1,images:[] },
+    { id: "4",title: 'Xbox3',description:'Descrizione',categories:'category1,category2',priceRange:1,images:[] },
 ]
 
 export default class ProductTab extends React.Component {
@@ -51,10 +53,79 @@ export default class ProductTab extends React.Component {
             this.setState({user:JSON.parse(value)})
     }
 
-    constructor() {
-        super();
-        this.state={user:null,loginPhase:0,username:"",currentIndex:0}
-        this.loadUser();
+    async createAction(type,id){
+        const body = {like_action:type,
+            timestamp:"2021-10-10 22:22:22",
+            product_id: this.state.products[id].id}
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*','access-token':this.state.user.tokenObject.token },
+            body: JSON.stringify(body)
+        };
+        const response=await fetch(Constants.serverIp + Constants.productMicroserviceName + "actions/create",requestOptions)
+        console.log(response.ok)
+    }
+
+    async removeUser(){
+        await  AsyncStorage.removeItem("user");
+        this.setState({user:null});
+    }
+
+    async loadProducts() {
+        if (this.state.user !== null) {
+            const body = {
+                latitudePoint: 44.8980033,
+                longitudePoint: 8.2064966,
+                radius: 500,
+                categoryNumber: "1",
+                category1: "%",
+                category2: "",
+                category3: ""
+            }
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'access-token': this.state.user.tokenObject.token
+                },
+                body: JSON.stringify(body)
+            };
+            const response = await fetch(Constants.serverIp + Constants.productMicroserviceName + "products/filter", requestOptions)
+                if (response.ok) {
+                    response.json().then((obj) => {
+                        obj.forEach((elem) => {
+                            elem.selected_img = 0
+                            elem.images = []
+                            if (elem.image1 != null) {
+                                elem.images.push("data:image/png;base64,"+elem.image1.toString())
+                            }
+                            if (elem.image2 != null) {
+                                elem.images.push("data:image/png;base64,"+elem.image2.toString())
+                            }
+                            if (elem.image3 != null) {
+                                elem.images.push("data:image/png;base64," + elem.image3.toString())
+                            }
+                        })
+                        console.log(obj.length)
+                        this.setState({products: obj})
+                        this.setState({currentIndex: 0})
+                    })
+                } else {
+                    if (response.status === 401) {
+                        this.removeUser();
+                    }
+                }
+        }
+    }
+
+    constructor(props) {
+        super(props);
+        this.state={user:null,products:[],currentIndex:0}
+        this.loadUser().then(()=>{this.loadProducts()});
+        this.props.navigation.addListener('focus',()=>{
+            this.loadUser().then(()=>{this.loadProducts()});
+        });
         this.position = new Animated.ValueXY();
         this.rotate = this.position.x.interpolate({
             inputRange: [-SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2],
@@ -87,9 +158,10 @@ export default class ProductTab extends React.Component {
                 if (gestureState.dx > 120) {
                     //Swipe A Destra
                     console.log("Swipe a Destra")
+                    this.createAction(true,this.state.currentIndex);
                     Animated.spring(this.position, {
                         toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy },
-                        useNativeDriver: true
+                        useNativeDriver: false
                     }).start(() => {
                         this.setState({ currentIndex: this.state.currentIndex + 1 }, () => {
                             this.position.setValue({ x: 0, y: 0 })
@@ -98,9 +170,10 @@ export default class ProductTab extends React.Component {
                 } else if (gestureState.dx < -120) {
                     //Swipe A Sinistra
                     console.log("Swipe a Sinistra")
+                    this.createAction(false,this.state.currentIndex);
                     Animated.spring(this.position, {
                         toValue: { x: -SCREEN_WIDTH - 100, y: gestureState.dy },
-                        useNativeDriver: true
+                        useNativeDriver: false
                     }).start(() => {
                         this.setState({ currentIndex: this.state.currentIndex + 1 }, () => {
                             this.position.setValue({ x: 0, y: 0 })
@@ -110,7 +183,7 @@ export default class ProductTab extends React.Component {
                     Animated.spring(this.position, {
                         toValue: { x: 0, y: 0 },
                         friction: 4,
-                        useNativeDriver: true
+                        useNativeDriver: false
                     }).start()
                 }
             }
@@ -122,7 +195,7 @@ export default class ProductTab extends React.Component {
 
 
     renderCards = () =>{
-        return Cards.map((item,i) => {
+        return this.state.products.map((item,i) => {
             if (i < this.state.currentIndex) {
                 return null;
             } else if (Math.abs(this.state.currentIndex -i) < SHOWABLE_CARDS) //Se è una card nel range di quelle da visualizzare
@@ -146,7 +219,6 @@ export default class ProductTab extends React.Component {
         return (
             <View style={styles.viewContainer}>
                 <Text style={styles.topText}>Scopri</Text>
-                <View style={{ height:"10%" }}>{/* Filter bar */}</View>
                 <View style={styles.cardContainer}>
                     {this.renderCards()}
                 </View>

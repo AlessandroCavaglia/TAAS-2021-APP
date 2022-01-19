@@ -1,5 +1,8 @@
 import React from "react";
 import {View, StyleSheet, Text  } from "react-native";
+import { SliderBox } from "react-native-image-slider-box";
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 /* Propos:
     elem : the product
@@ -8,7 +11,64 @@ import {View, StyleSheet, Text  } from "react-native";
     actualIndex : the actualIndex
 
  */
-const SHOWABLE_CARDS = 3
+
+
+export default class TinderCard extends React.Component {
+    constructor() {
+        super();
+        this.calculateOffset = (index)=>{
+            let  distance=(Math.abs(index-this.props.actualIndex))
+                return ((15 * distance));
+        }
+        this.state={width:0}
+    }
+
+    onLayout = e => {
+        this.setState({
+            width: e.nativeEvent.layout.width
+        });
+    };
+
+
+    render(){
+        return <View style={this.props.actualIndex!==this.props.elem.id ? [styles.card,{marginTop:this.calculateOffset(this.props.elem.id)}]:styles.card}>
+                <View style={styles.img} onLayout={this.onLayout}>
+                    <SliderBox parentWidth={this.state.width} style={styles.sliderBox} images={this.props.elem.images} />
+                </View>
+                <View style={styles.cardTitleView}>
+                    <View style={styles.userCircleContainer}>
+                        <View style={styles.userCircle}>
+                            <Icon name="user-circle" size={30}/>
+                        </View>
+                    </View>
+                    <View style={styles.cardTitleContainer}>
+                        <Text style={styles.cardTitle}>{this.props.elem.title}</Text>
+                    </View>
+                    <View style={styles.productValueContainer}>
+                        <Text style={styles.prductValueCost}>
+                            {this.renderCost()}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+    }
+
+    renderCost(){
+            switch (this.props.elem.priceRange) {
+                case 1:
+                    return "$"
+                case 2:
+                    return "$$"
+                case 3:
+                    return "$$$"
+                case 4:
+                    return "$$$$"
+                default:
+                    return "$$"
+            }
+    }
+}
+
 const styles=StyleSheet.create({
     card:{
         flex:1,
@@ -26,7 +86,6 @@ const styles=StyleSheet.create({
     },
     img:{
         height:"80%",
-        backgroundColor:"black"
     },
     cardTitleView:{
         flexDirection:"row",
@@ -51,6 +110,9 @@ const styles=StyleSheet.create({
         flex:2,
     },
     userCircle:{
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"center",
         width:50,
         height:50,
         borderRadius:25,
@@ -76,37 +138,15 @@ const styles=StyleSheet.create({
     },
     productValue:{
         fontSize:15,
+    },
+    prductValueCost:{
+        fontSize:15,
+        color:"#B8860BFF",
+        fontWeight:"bold",
+    },
+    sliderBox:{
+        height:"100%",
+        borderTopLeftRadius:20,
+        borderTopRightRadius:20,
     }
 })
-
-
-export default class TinderCard extends React.Component {
-    constructor() {
-        super();
-        this.calculateOffset = (index)=>{
-            let  distance=(Math.abs(index-this.props.actualIndex))
-                return ((15 * distance));
-        }
-    }
-
-
-    render(){
-        return <View style={this.props.actualIndex!==this.props.elem.id ? [styles.card,{marginTop:this.calculateOffset(this.props.elem.id)}]:styles.card}>
-                <View style={styles.imgBar}>{/*Barra immagini*/}</View>
-                <View style={styles.img}>{/*Immagine*/}</View>
-                <View style={styles.cardTitleView}>
-                    <View style={styles.userCircleContainer}>
-                        <View style={styles.userCircle}/>
-                    </View>
-                    <View style={styles.cardTitleContainer}>
-                        <Text style={styles.cardTitle}>{this.props.elem.title}</Text>
-                    </View>
-                    <View style={styles.productValueContainer}>
-                        <Text style={styles.productValue}>
-                            $$$$$
-                        </Text>
-                    </View>
-                </View>
-            </View>
-    }
-}
