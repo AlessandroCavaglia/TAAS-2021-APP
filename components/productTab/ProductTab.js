@@ -8,7 +8,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width
 const SHOWABLE_CARDS = 3
 const styles = StyleSheet.create({
     animatedView:{
-        height: SCREEN_HEIGHT -200,
+        height: SCREEN_HEIGHT - 200,
         width: SCREEN_WIDTH-120,
         padding: 10,
         backgroundColor:'#fa0000',

@@ -3,3 +3,4 @@ export default class Constants{
     static userMicroserviceName="user-microservice/api/v1/";
     static productMicroserviceName="product-microservice/api/v1/";
 }
+

@@ -17,7 +17,7 @@ export default class MatchesTab extends React.Component {
 
     async removeUser(){
         await  AsyncStorage.removeItem("user");
-        this.setState({user:null});
+        this.setState({user: null});
     }
 
     async loadMyMatches(){

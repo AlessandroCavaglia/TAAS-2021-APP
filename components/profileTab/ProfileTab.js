@@ -107,7 +107,7 @@ export default class ProfileTab extends React.Component {
     render() {
         return (
             <View style={generalStyleSheet.viewContainer}>
-                <Text style={generalStyleSheet.bigTitle}>Profilo</Text>
+                <Text style={generalStyleSheet.bigTitle }>Profilo</Text>
                 <View style={[style.profileContainer,generalStyleSheet.bigBorder]}>
                     <View style={style.leftColumn}>
                         <View style={style.firstProfileRow}>

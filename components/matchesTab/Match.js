@@ -11,7 +11,7 @@ export default class Match extends React.Component{
     }
     constructor(props) {
         super(props);
-        this.state={user:null,match:this.props.match}
+        this.state={user: null,match:this.props.match}
         this.loadUser();
     }
 

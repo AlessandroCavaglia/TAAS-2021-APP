@@ -73,8 +73,8 @@ const styles=StyleSheet.create({
     card:{
         flex:1,
         alignContent:"center",
-        height: "100%",
         width: "100%",
+        height: "100%",
         backgroundColor:'#fafafa',
         borderWidth:3,
         borderColor:"black",

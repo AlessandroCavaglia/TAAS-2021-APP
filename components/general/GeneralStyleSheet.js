@@ -3,8 +3,8 @@ import { StyleSheet} from 'react-native';
 export default StyleSheet.create({
     viewContainer:{
         marginTop:"15%",
-        marginLeft:"5%",
-        marginRight:"5%"
+        marginRight:"5%",
+        marginLeft:"5%"
     },
     bigTitle:{
         fontSize:30,
