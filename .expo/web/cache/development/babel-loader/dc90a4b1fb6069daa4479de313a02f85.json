@@ -1,0 +1,1 @@
+{"ast":null,"code":"export * from \"./dist\";","map":{"version":3,"sources":["D:/UniversityProjects/Taas/Front-End TAAS/Taas-App/node_modules/react-native-image-slider-box/index.js"],"names":[],"mappings":"AAAA","sourcesContent":["export * from \"./dist\";\n\n"]},"metadata":{},"sourceType":"module"}

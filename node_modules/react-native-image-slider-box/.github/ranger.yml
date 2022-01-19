@@ -1,0 +1,16 @@
+# Configuration for the repo ranger bot
+# See docs: https://www.notion.so/Documentation-8d7627bb1f3c42b7b1820e8d6f157a57#9879d1374fab4d1f9c607c230fd5123d
+labels:
+  wontfix: close
+  "squash when passing": merge
+  "rebase when passing": merge
+  "merge when passing": merge
+  "new contributor":
+    action: comment
+    delay: 5s
+    message: "Thanks for making your first contribution! :slightly_smiling_face:"
+  duplicate:
+    action: close
+    delay: 15s
+    comment: "Duplicate issue created! Closing in $DELAY . . ."
+    
